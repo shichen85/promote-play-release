@@ -1,9 +1,21 @@
-import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
 import { expect, test } from '@jest/globals'
+import { RunOptions, RunTarget } from 'github-action-ts-run-api'
+import dotenv from 'dotenv'
+dotenv.config()
+const target = RunTarget.mainJs('action.yml')
 
-// shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
-  console.log('it works!')
+async function expectRunInitiatesUpload(options: RunOptions) {
+  const result = await target.run(options)
+}
+
+test('correct bare minimum inputs', async () => {
+  const minimumOptions = RunOptions.create().setInputs({
+    'service-account-json-raw': process.env.SERVICE_ACCOUNT_JSON_RAW,
+    'package-name': process.env.PACKAGE_NAME,
+    'inapp-update-priority': '0',
+    'user-fraction': '1.0',
+    'from-track': 'staging',
+    'to-track': 'internal'
+  })
+  await expectRunInitiatesUpload(minimumOptions)
 })
